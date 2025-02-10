@@ -1,10 +1,13 @@
 -- Create the E-commerce Database
+
 CREATE DATABASE IF NOT EXISTS ecommerce;
 
 -- Use the database
+
 USE ecommerce;
 
 -- Table for Users (customers and admin)
+
 CREATE TABLE IF NOT EXISTS Users (
     user_id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(100) NOT NULL UNIQUE,
@@ -15,6 +18,7 @@ CREATE TABLE IF NOT EXISTS Users (
 );
 
 -- Table for Products
+
 CREATE TABLE IF NOT EXISTS Products (
     product_id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
@@ -27,6 +31,7 @@ CREATE TABLE IF NOT EXISTS Products (
 );
 
 -- Table for Orders
+
 CREATE TABLE IF NOT EXISTS Orders (
     order_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT,
@@ -36,6 +41,7 @@ CREATE TABLE IF NOT EXISTS Orders (
 );
 
 -- Table for Order Items (Products in each order)
+
 CREATE TABLE IF NOT EXISTS Order_Items (
     order_item_id INT AUTO_INCREMENT PRIMARY KEY,
     order_id INT,
@@ -47,6 +53,7 @@ CREATE TABLE IF NOT EXISTS Order_Items (
 );
 
 -- Table for Payments
+
 CREATE TABLE IF NOT EXISTS Payments (
     payment_id INT AUTO_INCREMENT PRIMARY KEY,
     order_id INT,
@@ -58,6 +65,7 @@ CREATE TABLE IF NOT EXISTS Payments (
 );
 
 -- Table for Product Reviews
+
 CREATE TABLE IF NOT EXISTS Reviews (
     review_id INT AUTO_INCREMENT PRIMARY KEY,
     product_id INT,
@@ -70,6 +78,7 @@ CREATE TABLE IF NOT EXISTS Reviews (
 );
 
 -- Table for Inventory Updates (Stock adjustments)
+
 CREATE TABLE IF NOT EXISTS Inventory_Updates (
     inventory_update_id INT AUTO_INCREMENT PRIMARY KEY,
     product_id INT,
@@ -80,6 +89,7 @@ CREATE TABLE IF NOT EXISTS Inventory_Updates (
 );
 
 -- Table for Shipping Info
+
 CREATE TABLE IF NOT EXISTS Shipping (
     shipping_id INT AUTO_INCREMENT PRIMARY KEY,
     order_id INT,
@@ -91,73 +101,90 @@ CREATE TABLE IF NOT EXISTS Shipping (
 );
 
 -- Insert sample users (admin and customer)
+
 INSERT INTO Users (username, password, email, role) VALUES
 ('admin', 'admin123', 'admin@example.com', 'admin'),
 ('john_doe', 'password123', 'john@example.com', 'customer');
 
 -- Insert sample products
+
 INSERT INTO Products (name, description, price, category, stock_quantity, image_url) VALUES
 ('Laptop', 'High-end gaming laptop', 1500.00, 'Electronics', 20, 'laptop.jpg'),
 ('Headphones', 'Noise-canceling headphones', 250.00, 'Electronics', 50, 'headphones.jpg');
 
 -- Insert a sample order (by the customer)
+
 INSERT INTO Orders (user_id, status) VALUES (2, 'pending');
 
 -- Insert items for the order (2 laptops and 3 headphones)
+
 INSERT INTO Order_Items (order_id, product_id, quantity, price) VALUES
 (1, 1, 2, 1500.00),
 (1, 2, 3, 250.00);
 
 -- Insert a payment for the order
+
 INSERT INTO Payments (order_id, payment_status, amount, payment_method) VALUES
 (1, 'completed', 4500.00, 'credit_card');
 
 -- Insert a product review
+
 INSERT INTO Reviews (product_id, user_id, rating, review_text) VALUES
 (1, 2, 5, 'Amazing laptop! Super fast and great for gaming.');
 
 -- Update inventory after purchase
+
 INSERT INTO Inventory_Updates (product_id, quantity, update_type) VALUES
 (1, -2, 'purchase'), -- 2 laptops sold
 (2, -3, 'purchase'); -- 3 headphones sold
 
 -- Insert shipping info
+
 INSERT INTO Shipping (order_id, carrier, tracking_number, shipping_status, estimated_delivery_date) VALUES
 (1, 'FedEx', '12345ABC', 'shipped', '2025-02-12');
 
 
 -- 1. Get all products with details
+
 SELECT * FROM Products;
 
 -- 2. Get all orders for a user
+
 SELECT * FROM Orders WHERE user_id = 2;
 
 -- 3. Get all order items for a specific order
+
 SELECT oi.*, p.name FROM Order_Items oi
 JOIN Products p ON oi.product_id = p.product_id
 WHERE oi.order_id = 1;
 
 -- 4. Get product reviews
+
 SELECT r.*, u.username FROM Reviews r
 JOIN Users u ON r.user_id = u.user_id
 WHERE r.product_id = 1;
 
 -- 5. Get payment details for an order
+
 SELECT * FROM Payments WHERE order_id = 1;
 
 -- 6. Get inventory updates for a product
+
 SELECT * FROM Inventory_Updates WHERE product_id = 1;
 
 -- 7. Get shipping status for an order
+
 SELECT * FROM Shipping WHERE order_id = 1;
 
 -- 8. Get total sales for each product
+
 SELECT p.name, SUM(oi.quantity) AS total_sales
 FROM Order_Items oi
 JOIN Products p ON oi.product_id = p.product_id
 GROUP BY p.product_id;
 
 -- 9. Get the most frequent customers
+
 SELECT u.username, COUNT(o.order_id) AS order_count
 FROM Orders o
 JOIN Users u ON o.user_id = u.user_id
@@ -166,6 +193,7 @@ ORDER BY order_count DESC
 LIMIT 5;
 
 -- 10. Get total revenue by category
+
 SELECT p.category, SUM(oi.quantity * oi.price) AS total_revenue
 FROM Order_Items oi
 JOIN Products p ON oi.product_id = p.product_id
